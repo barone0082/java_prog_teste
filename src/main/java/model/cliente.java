@@ -12,6 +12,12 @@ public class cliente {
 	String telefone_celular2;
 	
 	
+	
+	@Override
+	public String toString() {
+		return getNome_empresa()+" - "+getCnpj()+" - "+getNome_cliente()+" - "+getId_cliente();
+	}
+	
 	public cliente(int id_cliente, String nome_empresa, String nome_cliente, String email, String cnpj,
 			String telefone_residencial, String telefone_celular1, String telefone_celular2) {
 		super();

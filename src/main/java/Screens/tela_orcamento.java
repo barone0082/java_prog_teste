@@ -7,18 +7,43 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import javax.swing.UIManager;
+
+import org.w3c.dom.CDATASection;
+
+import DAO.conexDAO;
+import model.cliente;
+import model.itens_orcamento;
+import model.orcamento;
+import model.produto;
+
 import javax.swing.JLabel;
 import java.awt.List;
 import javax.swing.JList;
 import javax.swing.JComboBox;
 import java.awt.Button;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JScrollPane;
 import window.window.java.*;
+import javax.swing.JSpinner;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
+import java.beans.VetoableChangeListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.DropMode;
+import java.awt.event.InputMethodListener;
+import java.awt.event.InputMethodEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 public class tela_orcamento {
 
 	private JFrame frame;
@@ -28,12 +53,12 @@ public class tela_orcamento {
 	private JTextField txtPrecoUnitario;
 	private JTextField TxtTotalItem;
 	private final ButtonGroup groupMeioPagamento = new ButtonGroup();
-	private JTextField textField;
+	private JTextField txtTotalPedido;
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main(String string) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -48,15 +73,17 @@ public class tela_orcamento {
 
 	/**
 	 * Create the application.
+	 * @throws SQLException 
 	 */
-	public tela_orcamento() {
+	public tela_orcamento() throws SQLException {
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
+	 * @throws SQLException 
 	 */
-	private void initialize() {
+	private void initialize() throws SQLException {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 690, 433);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -64,7 +91,7 @@ public class tela_orcamento {
 		 
 		frame.getContentPane().setLayout(null);
 		
-		JLabel lblMaterial = new JLabel("Material :");
+		JLabel lblMaterial = new JLabel("Produto");
 		lblMaterial.setBounds(20, 52, 76, 30);
 		frame.getContentPane().add(lblMaterial);
 		
@@ -97,41 +124,93 @@ public class tela_orcamento {
 		frame.getContentPane().add(txtTitulo);
 		txtTitulo.setColumns(10);
 		
-		JComboBox BoxMateriais = new JComboBox();
+		final JComboBox BoxMateriais = new JComboBox();
+		final produto p = new produto();
+		
+		BoxMateriais.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent arg0) {
+				produto p = (produto) BoxMateriais.getSelectedItem();
+				txtPrecoUnitario.setText(String.valueOf(p.getValor_produto_unitario()));
+			}
+		});
+		
+
 		BoxMateriais.setBounds(72, 57, 276, 20);
 		frame.getContentPane().add(BoxMateriais);
 		
-		JComboBox BoxQuantidade = new JComboBox();
-		BoxQuantidade.setBounds(92, 95, 47, 20);
-		frame.getContentPane().add(BoxQuantidade);
-		
 		TxtLargura = new JTextField();
+		TxtLargura.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				produto p = new produto();
+				Double largura = Double.parseDouble(TxtLargura.getText());
+				p.setLargura_produto(largura);
+				System.out.println(largura);
+			}
+		});
+			
+		
+		
+		
+		
+		TxtLargura.setToolTipText("double");
+		TxtLargura.setText("0");
 		TxtLargura.setBounds(20, 157, 47, 20);
 		frame.getContentPane().add(TxtLargura);
 		TxtLargura.setColumns(10);
 		
 		TxtComprimento = new JTextField();
+		TxtComprimento.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				produto p = new produto();
+				Double comprimento = Double.parseDouble(TxtComprimento.getText());
+				p.setComprimento_produto(comprimento);
+				System.out.println(comprimento);
+			}
+		});
+	
+			
+		TxtComprimento.setToolTipText("double");
+		TxtComprimento.setText("0");
 		TxtComprimento.setColumns(10);
 		TxtComprimento.setBounds(92, 157, 47, 20);
 		frame.getContentPane().add(TxtComprimento);
 		
 		txtPrecoUnitario = new JTextField();
+		txtPrecoUnitario.setEditable(false);
+		txtPrecoUnitario.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+			}
+		});
 		txtPrecoUnitario.setColumns(10);
-		txtPrecoUnitario.setBounds(100, 197, 68, 20);
+		txtPrecoUnitario.setBounds(158, 197, 68, 20);
 		frame.getContentPane().add(txtPrecoUnitario);
 		
 		TxtTotalItem = new JTextField();
-		TxtTotalItem.setColumns(10);
-		TxtTotalItem.setBounds(121, 240, 68, 20);
-		frame.getContentPane().add(TxtTotalItem);
-		
-		JButton btnGerarOrcamento = new JButton("Gerar Orçamento");
-		btnGerarOrcamento.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
+		TxtTotalItem.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				double totalMetroQuadrado = p.getComprimento_produto()*p.getLargura_produto();
+				double valorTotal = (totalMetroQuadrado*p.getQuantidade_produto_orcamento());
+				txtTotalPedido.setText(String.valueOf(valorTotal));
 			}
 		});
-		btnGerarOrcamento.setBounds(395, 338, 243, 47);
+		TxtTotalItem.setEditable(false);
+		TxtTotalItem.setColumns(10);
+		TxtTotalItem.setBounds(158, 240, 68, 20);
+		frame.getContentPane().add(TxtTotalItem);
+		
+
+	 
+		
+		JButton btnGerarOrcamento = new JButton("Gerar Orçamento");
+		
+		conexDAO d = new conexDAO();
+		d.listarProdutos(BoxMateriais,p);
+		
+		
+		btnGerarOrcamento.setBounds(533, 338, 131, 47);
 		frame.getContentPane().add(btnGerarOrcamento);
 		
 		JScrollPane itensOrcamento = new JScrollPane();
@@ -142,9 +221,43 @@ public class tela_orcamento {
 		lblValorTotalDo.setBounds(20, 338, 125, 30);
 		frame.getContentPane().add(lblValorTotalDo);
 		
-		textField = new JTextField();
-		textField.setColumns(10);
-		textField.setBounds(132, 343, 94, 20);
-		frame.getContentPane().add(textField);
+		txtTotalPedido = new JTextField();
+		txtTotalPedido.setEnabled(false);
+		txtTotalPedido.setColumns(10);
+		txtTotalPedido.setBounds(198, 343, 94, 20);
+		frame.getContentPane().add(txtTotalPedido);
+		
+		JButton btnInserirItem = new JButton("Inserir Item");
+		btnInserirItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				itens_orcamento io = new itens_orcamento();
+				produto prd = new produto();
+				io.setTitulo(txtTitulo.getText());
+				io.setId_itens_orcamento(0);
+				prd.setComprimento_produto(Double.parseDouble(TxtComprimento.getText()));
+				prd.setLargura_produto(Double.parseDouble(TxtLargura.getText()));
+				
+				produto p = (produto) BoxMateriais.getSelectedItem();
+				txtPrecoUnitario.setText(String.valueOf(p.getValor_produto_unitario()));
+			}
+		});
+		btnInserirItem.setBounds(345, 338, 125, 47);
+		frame.getContentPane().add(btnInserirItem);
+		
+		final JSpinner spnQuantidade = new JSpinner();
+		spnQuantidade.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				
+				produto p = new produto();
+				int valor=0;
+				valor = (Integer)spnQuantidade.getValue();
+				p.setQuantidade_produto_orcamento(valor);
+				System.out.println(valor);
+			}
+		});
+		
+		
+		spnQuantidade.setBounds(92, 93, 47, 20);
+		frame.getContentPane().add(spnQuantidade);
 	}
 }

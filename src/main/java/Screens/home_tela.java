@@ -89,15 +89,18 @@ public class home_tela {
 		JButton btnOrcamento = new JButton("Orcamento");
 		btnOrcamento.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tela_selecionar_cliente so;
+			
+				tela_prazo_orcamento tpo = null;
 				try {
-					so = new tela_selecionar_cliente();
-					so.main(null);
+					tpo = new tela_prazo_orcamento();
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
-				
+				tpo.main(null);
 				
 			}
 		});
@@ -107,8 +110,21 @@ public class home_tela {
 			}
 		});
 		
-		JButton btnEstoque = new JButton("Estoque");
-		btnEstoque.addMouseListener(new MouseAdapter() {
+		JButton btnProduto = new JButton("Adicionar Produto");
+		btnProduto.addActionListener(new ActionListener() {
+			@SuppressWarnings("static-access")
+			public void actionPerformed(ActionEvent arg0) {
+				adicionar_produto ap = null;
+				try {
+					ap = new adicionar_produto();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				ap.main(null);
+			}
+		});
+		btnProduto.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 			}
@@ -157,7 +173,7 @@ public class home_tela {
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(btnOrcamento, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnPedido, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnEstoque, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnProduto, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnCadastroDeClientes, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnGerenciamentoDeClientes, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap(497, Short.MAX_VALUE))
@@ -170,7 +186,7 @@ public class home_tela {
 					.addGap(18)
 					.addComponent(btnPedido, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 					.addGap(28)
-					.addComponent(btnEstoque, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+					.addComponent(btnProduto, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 					.addGap(28)
 					.addComponent(btnCadastroDeClientes, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 					.addGap(27)
